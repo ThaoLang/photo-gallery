@@ -4,6 +4,7 @@ A full-stack web application that allows users to upload photos and add comments
 
 **Live Demo**: [photo-gallery.vercel.app](https://photo-gallery-4m4x6q670-langthao200243gmailcoms-projects.vercel.app/)
 
+**Demo in Youtube**: [Demo](https://www.youtube.com/watch?v=_ofCGg_9IVo/)
 
 ## Tech Stack
 
