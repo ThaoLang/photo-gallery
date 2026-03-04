@@ -200,7 +200,7 @@ export default function Home() {
       >
         <div style={{ textAlign: "center", padding: "8px 0 20px" }}>
           <Title level={4} style={{ marginBottom: 4 }}>Upload a Photo</Title>
-          <Text type="secondary">PNG, JPG, JPEG, WEBP or GIF up to 10MB</Text>
+          <Text type="secondary">PNG, JPG, JPEG, WEBP or GIF up to 4MB</Text>
         </div>
 
         <Upload.Dragger
