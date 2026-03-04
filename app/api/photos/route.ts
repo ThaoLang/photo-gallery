@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import prisma from "@/lib/prisma";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function GET() {
   try {
@@ -30,29 +37,24 @@ export async function POST(request: NextRequest) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const isVercel = process.env.VERCEL === "1";
-    const uploadDir = isVercel ? "/tmp/uploads" : path.join(process.cwd(), "public", "uploads");
+    const base64 = Buffer.from(bytes).toString("base64");
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    await mkdir(uploadDir, { recursive: true });
-
-    const uniqueName = `${Date.now()}-${file.name.replace(/\s/g, "_")}`;
-    const filePath = path.join(uploadDir, uniqueName);
-    await writeFile(filePath, buffer);
-
-    const url = isVercel ? `/api/images/${uniqueName}` : `/uploads/${uniqueName}`;
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: "photo-gallery",
+    });
 
     const photo = await prisma.photo.create({
       data: {
-        filename: uniqueName,
-        url,
+        filename: file.name,
+        url: result.secure_url, 
       },
       include: { comments: true },
     });
 
     return NextResponse.json(photo, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to upload photo" }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
