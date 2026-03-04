@@ -28,6 +28,7 @@ import Image from "next/image";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
+const MAX_IMAGE_SIZE=4 * 1024 * 1024;
 
 interface Comment {
   id: number;
@@ -76,6 +77,12 @@ export default function Home() {
     }
 
     const file = fileList[0].originFileObj as File;
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      message.error("File is too large! Please select an image under 4MB");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
 
